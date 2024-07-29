@@ -176,36 +176,42 @@ public class CSVViewer extends Application {
 
         VBox vbox = new VBox(tableView);
         Scene scene = new Scene(vbox);
+        vbox.prefHeightProperty().bind(primaryStage.heightProperty());
+        tableView.prefHeightProperty().bind(vbox.heightProperty());
+
+        scene.getStylesheets().add("file:src/styles.css");
+
         primaryStage.setScene(scene);
+        primaryStage.setMaximized(true);
         primaryStage.show();
     }
 
     private void loadCSV() {
-        File file = new File("src/sample.csv"); // sample.csv ファイルのパスを指定
-    
+        File file = new File("src/wendy.csv"); // sample.csv ファイルのパスを指定
+
         if (file.exists()) {
             try (BufferedReader br = new BufferedReader(new FileReader(file))) {
                 String line;
                 tableView.getItems().clear(); // テーブルをクリアします
-    
+
                 // ヘッダー行をスキップします
                 if ((line = br.readLine()) != null) {
                     // 何もせずにヘッダーをスキップ
                 }
-    
+
                 while ((line = br.readLine()) != null) {
                     String[] values = line.split(",");
-    
+
                     // フィールド数が足りない場合は空文字列で埋める
                     String[] paddedValues = new String[37];
                     for (int i = 0; i < paddedValues.length; i++) {
                         if (i < values.length) {
-                            paddedValues[i] = values[i];
+                            paddedValues[i] = values[i].isEmpty() ? "×" : values[i];
                         } else {
                             paddedValues[i] = i >= 30 ? "0" : "×"; // 数値フィールドの場合は "0" を、文字フィールドの場合は "×" をデフォルト値とする
                         }
                     }
-    
+
                     CSVRecord record = new CSVRecord();
                     record.setProduct(paddedValues[0]);
                     record.setEbi(paddedValues[1]);
@@ -237,19 +243,33 @@ public class CSVViewer extends Application {
                     record.setApple(paddedValues[27]);
                     record.setGelatin(paddedValues[28]);
                     record.setFish(paddedValues[29]);
-                    record.setKcal(Double.parseDouble(paddedValues[30]));
-                    record.setProtein(Double.parseDouble(paddedValues[31]));
-                    record.setFat(Double.parseDouble(paddedValues[32]));
-                    record.setCarbs(Double.parseDouble(paddedValues[33]));
-                    record.setSugars(Double.parseDouble(paddedValues[34]));
-                    record.setSalt(Double.parseDouble(paddedValues[35]));
-                    record.setDietaryFiber(Double.parseDouble(paddedValues[36]));
-    
+
+                    // 数値フィールドを変換し、エラーが発生した場合はデフォルト値を設定
+                    record.setKcal(parseDoubleOrDefault(paddedValues[30]));
+                    record.setProtein(parseDoubleOrDefault(paddedValues[31]));
+                    record.setFat(parseDoubleOrDefault(paddedValues[32]));
+                    record.setCarbs(parseDoubleOrDefault(paddedValues[33]));
+                    record.setSugars(parseDoubleOrDefault(paddedValues[34]));
+                    record.setSalt(parseDoubleOrDefault(paddedValues[35]));
+                    record.setDietaryFiber(parseDoubleOrDefault(paddedValues[36]));
+
                     tableView.getItems().add(record);
                 }
             } catch (IOException e) {
                 e.printStackTrace();
             }
+        }
+    }
+
+    private double parseDoubleOrDefault(String value) {
+        try {
+            String cleanedValue = value.replaceAll("[^0-9.]", ""); // 非数値文字を削除
+            if (cleanedValue.isEmpty()) {
+                return 0;
+            }
+            return Double.parseDouble(cleanedValue); // 数値変換
+        } catch (NumberFormatException e) {
+            return 0; // デフォルト値を 0 とする
         }
     }
 }

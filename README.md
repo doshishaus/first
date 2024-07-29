@@ -21,3 +21,4 @@ The `JAVA PROJECTS` view allows you to manage your dependencies. More details ca
 javac --module-path lib --add-modules javafx.controls -d bin src/CSVViewer.java src/CSVRecord.java
 
 java --module-path lib --add-modules javafx.controls -cp bin CSVViewer
+
