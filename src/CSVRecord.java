@@ -36,7 +36,7 @@ public class CSVRecord {
     private double sugars;
     private double salt;
     private double dietaryFiber;
-
+    
     // 商品名
     public String getProduct() {
         return product;
@@ -369,4 +369,11 @@ public class CSVRecord {
     public void setDietaryFiber(double dietaryFiber) {
         this.dietaryFiber = dietaryFiber;
     }
+
+    @Override
+    public String toString() {
+        return String.format("商品名: %s\nえび: %s\nかに: %s\n小麦: %s\nそば: %s\n卵: %s\n乳: %s\n落花生: %s\nくるみ: %s\nアーモンド: %s\nあわび: %s\nいか: %s\nいくら: %s\nオレンジ: %s\nカシューナッツ: %s\nキウイフルーツ: %s\n牛肉: %s\nごま: %s\nさけ: %s\nさば: %s\n大豆: %s\n鶏肉: %s\nバナナ: %s\n豚肉: %s\nまつたけ: %s\nもも: %s\nやまいも: %s\nりんご: %s\nゼラチン: %s\n魚介類: %s\n熱量(kcal): %.2f\nたんぱく質(g): %.2f\n脂質(g): %.2f\n炭水化物(g): %.2f\n糖質(g): %.2f\n食塩相当量(g): %.2f\n食物繊維(g): %.2f",
+                product, ebi, kani, komugi, soba, tamago, nyu, rakkasei, kurumi, almond, awabi, ika, ikura, orange, cashewNuts, kiwi, beef, sesame, sake, saba, soy, chicken, banana, pork, matsutake, peach, yam, apple, gelatin, fish, kcal, protein, fat, carbs, sugars, salt, dietaryFiber);
+    }
+
 }

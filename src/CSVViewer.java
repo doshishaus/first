@@ -1,19 +1,30 @@
 import javafx.application.Application;
-import javafx.stage.Stage;
+import javafx.geometry.Insets;
+import javafx.geometry.Pos;
 import javafx.scene.Scene;
-import javafx.scene.control.TableColumn;
-import javafx.scene.control.TableView;
-import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.canvas.Canvas;
+import javafx.scene.canvas.GraphicsContext;
+import javafx.scene.control.ComboBox;
+import javafx.scene.control.Label;
+import javafx.scene.layout.GridPane;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
+import javafx.scene.paint.Color;
+import javafx.stage.Stage;
 
 import java.io.BufferedReader;
-import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 
 public class CSVViewer extends Application {
 
-    private TableView<CSVRecord> tableView = new TableView<>();
+    private ComboBox<String> comboBox;
+    private Map<String, CSVRecord> recordMap = new HashMap<>();
+    private Label productNameLabel;
+    private GridPane gridPane;
 
     public static void main(String[] args) {
         launch(args);
@@ -23,253 +34,155 @@ public class CSVViewer extends Application {
     public void start(Stage primaryStage) {
         primaryStage.setTitle("CSV Viewer");
 
-        TableColumn<CSVRecord, String> productColumn = new TableColumn<>("商品名");
-        productColumn.setCellValueFactory(new PropertyValueFactory<>("product"));
+        comboBox = new ComboBox<>();
+        comboBox.setOnAction(e -> displayRecord(comboBox.getValue()));
 
-        TableColumn<CSVRecord, String> ebiColumn = new TableColumn<>("えび");
-        ebiColumn.setCellValueFactory(new PropertyValueFactory<>("ebi"));
+        productNameLabel = new Label();
 
-        TableColumn<CSVRecord, String> kaniColumn = new TableColumn<>("かに");
-        kaniColumn.setCellValueFactory(new PropertyValueFactory<>("kani"));
+        gridPane = new GridPane();
+        gridPane.setPadding(new Insets(10));
+        gridPane.setHgap(10);
+        gridPane.setVgap(10);
+        gridPane.setAlignment(Pos.CENTER);
 
-        TableColumn<CSVRecord, String> komugiColumn = new TableColumn<>("小麦");
-        komugiColumn.setCellValueFactory(new PropertyValueFactory<>("komugi"));
+        VBox gridContainer = new VBox(gridPane);
+        gridContainer.setAlignment(Pos.CENTER);
 
-        TableColumn<CSVRecord, String> sobaColumn = new TableColumn<>("そば");
-        sobaColumn.setCellValueFactory(new PropertyValueFactory<>("soba"));
-
-        TableColumn<CSVRecord, String> tamagoColumn = new TableColumn<>("卵");
-        tamagoColumn.setCellValueFactory(new PropertyValueFactory<>("tamago"));
-
-        TableColumn<CSVRecord, String> nyuColumn = new TableColumn<>("乳");
-        nyuColumn.setCellValueFactory(new PropertyValueFactory<>("nyu"));
-
-        TableColumn<CSVRecord, String> rakkaseiColumn = new TableColumn<>("落花生");
-        rakkaseiColumn.setCellValueFactory(new PropertyValueFactory<>("rakkasei"));
-
-        TableColumn<CSVRecord, String> kurumiColumn = new TableColumn<>("くるみ");
-        kurumiColumn.setCellValueFactory(new PropertyValueFactory<>("kurumi"));
-
-        TableColumn<CSVRecord, String> almondColumn = new TableColumn<>("アーモンド");
-        almondColumn.setCellValueFactory(new PropertyValueFactory<>("almond"));
-
-        TableColumn<CSVRecord, String> awabiColumn = new TableColumn<>("あわび");
-        awabiColumn.setCellValueFactory(new PropertyValueFactory<>("awabi"));
-
-        TableColumn<CSVRecord, String> ikaColumn = new TableColumn<>("いか");
-        ikaColumn.setCellValueFactory(new PropertyValueFactory<>("ika"));
-
-        TableColumn<CSVRecord, String> ikuraColumn = new TableColumn<>("いくら");
-        ikuraColumn.setCellValueFactory(new PropertyValueFactory<>("ikura"));
-
-        TableColumn<CSVRecord, String> orangeColumn = new TableColumn<>("オレンジ");
-        orangeColumn.setCellValueFactory(new PropertyValueFactory<>("orange"));
-
-        TableColumn<CSVRecord, String> cashewNutsColumn = new TableColumn<>("カシューナッツ");
-        cashewNutsColumn.setCellValueFactory(new PropertyValueFactory<>("cashewNuts"));
-
-        TableColumn<CSVRecord, String> kiwiColumn = new TableColumn<>("キウイフルーツ");
-        kiwiColumn.setCellValueFactory(new PropertyValueFactory<>("kiwi"));
-
-        TableColumn<CSVRecord, String> beefColumn = new TableColumn<>("牛肉");
-        beefColumn.setCellValueFactory(new PropertyValueFactory<>("beef"));
-
-        TableColumn<CSVRecord, String> sesameColumn = new TableColumn<>("ごま");
-        sesameColumn.setCellValueFactory(new PropertyValueFactory<>("sesame"));
-
-        TableColumn<CSVRecord, String> sakeColumn = new TableColumn<>("さけ");
-        sakeColumn.setCellValueFactory(new PropertyValueFactory<>("sake"));
-
-        TableColumn<CSVRecord, String> sabaColumn = new TableColumn<>("さば");
-        sabaColumn.setCellValueFactory(new PropertyValueFactory<>("saba"));
-
-        TableColumn<CSVRecord, String> soyColumn = new TableColumn<>("大豆");
-        soyColumn.setCellValueFactory(new PropertyValueFactory<>("soy"));
-
-        TableColumn<CSVRecord, String> chickenColumn = new TableColumn<>("鶏肉");
-        chickenColumn.setCellValueFactory(new PropertyValueFactory<>("chicken"));
-
-        TableColumn<CSVRecord, String> bananaColumn = new TableColumn<>("バナナ");
-        bananaColumn.setCellValueFactory(new PropertyValueFactory<>("banana"));
-
-        TableColumn<CSVRecord, String> porkColumn = new TableColumn<>("豚肉");
-        porkColumn.setCellValueFactory(new PropertyValueFactory<>("pork"));
-
-        TableColumn<CSVRecord, String> matsutakeColumn = new TableColumn<>("まつたけ");
-        matsutakeColumn.setCellValueFactory(new PropertyValueFactory<>("matsutake"));
-
-        TableColumn<CSVRecord, String> peachColumn = new TableColumn<>("もも");
-        peachColumn.setCellValueFactory(new PropertyValueFactory<>("peach"));
-
-        TableColumn<CSVRecord, String> yamColumn = new TableColumn<>("やまいも");
-        yamColumn.setCellValueFactory(new PropertyValueFactory<>("yam"));
-
-        TableColumn<CSVRecord, String> appleColumn = new TableColumn<>("りんご");
-        appleColumn.setCellValueFactory(new PropertyValueFactory<>("apple"));
-
-        TableColumn<CSVRecord, String> gelatinColumn = new TableColumn<>("ゼラチン");
-        gelatinColumn.setCellValueFactory(new PropertyValueFactory<>("gelatin"));
-
-        TableColumn<CSVRecord, String> fishColumn = new TableColumn<>("魚介類");
-        fishColumn.setCellValueFactory(new PropertyValueFactory<>("fish"));
-
-        TableColumn<CSVRecord, Double> kcalColumn = new TableColumn<>("熱量(kcal)");
-        kcalColumn.setCellValueFactory(new PropertyValueFactory<>("kcal"));
-
-        TableColumn<CSVRecord, Double> proteinColumn = new TableColumn<>("たんぱく質(g)");
-        proteinColumn.setCellValueFactory(new PropertyValueFactory<>("protein"));
-
-        TableColumn<CSVRecord, Double> fatColumn = new TableColumn<>("脂質(g)");
-        fatColumn.setCellValueFactory(new PropertyValueFactory<>("fat"));
-
-        TableColumn<CSVRecord, Double> carbsColumn = new TableColumn<>("炭水化物(g)");
-        carbsColumn.setCellValueFactory(new PropertyValueFactory<>("carbs"));
-
-        TableColumn<CSVRecord, Double> sugarsColumn = new TableColumn<>("糖質(g)");
-        sugarsColumn.setCellValueFactory(new PropertyValueFactory<>("sugars"));
-
-        TableColumn<CSVRecord, Double> saltColumn = new TableColumn<>("食塩相当量(g)");
-        saltColumn.setCellValueFactory(new PropertyValueFactory<>("salt"));
-
-        TableColumn<CSVRecord, Double> dietaryFiberColumn = new TableColumn<>("食物繊維(g)");
-        dietaryFiberColumn.setCellValueFactory(new PropertyValueFactory<>("dietaryFiber"));
-
-        tableView.getColumns().add(productColumn);
-        tableView.getColumns().add(ebiColumn);
-        tableView.getColumns().add(kaniColumn);
-        tableView.getColumns().add(komugiColumn);
-        tableView.getColumns().add(sobaColumn);
-        tableView.getColumns().add(tamagoColumn);
-        tableView.getColumns().add(nyuColumn);
-        tableView.getColumns().add(rakkaseiColumn);
-        tableView.getColumns().add(kurumiColumn);
-        tableView.getColumns().add(almondColumn);
-        tableView.getColumns().add(awabiColumn);
-        tableView.getColumns().add(ikaColumn);
-        tableView.getColumns().add(ikuraColumn);
-        tableView.getColumns().add(orangeColumn);
-        tableView.getColumns().add(cashewNutsColumn);
-        tableView.getColumns().add(kiwiColumn);
-        tableView.getColumns().add(beefColumn);
-        tableView.getColumns().add(sesameColumn);
-        tableView.getColumns().add(sakeColumn);
-        tableView.getColumns().add(sabaColumn);
-        tableView.getColumns().add(soyColumn);
-        tableView.getColumns().add(chickenColumn);
-        tableView.getColumns().add(bananaColumn);
-        tableView.getColumns().add(porkColumn);
-        tableView.getColumns().add(matsutakeColumn);
-        tableView.getColumns().add(peachColumn);
-        tableView.getColumns().add(yamColumn);
-        tableView.getColumns().add(appleColumn);
-        tableView.getColumns().add(gelatinColumn);
-        tableView.getColumns().add(fishColumn);
-        tableView.getColumns().add(kcalColumn);
-        tableView.getColumns().add(proteinColumn);
-        tableView.getColumns().add(fatColumn);
-        tableView.getColumns().add(carbsColumn);
-        tableView.getColumns().add(sugarsColumn);
-        tableView.getColumns().add(saltColumn);
-        tableView.getColumns().add(dietaryFiberColumn);
+        VBox vbox = new VBox(20, comboBox, gridContainer, productNameLabel);
+        vbox.setAlignment(Pos.CENTER);
 
         loadCSV();
 
-        VBox vbox = new VBox(tableView);
-        Scene scene = new Scene(vbox);
-        vbox.prefHeightProperty().bind(primaryStage.heightProperty());
-        tableView.prefHeightProperty().bind(vbox.heightProperty());
-
-        scene.getStylesheets().add("file:src/styles.css");
-
+        StackPane root = new StackPane(vbox);
+        root.setAlignment(Pos.CENTER);
+        Scene scene = new Scene(root, 800, 600);
         primaryStage.setScene(scene);
         primaryStage.setMaximized(true);
         primaryStage.show();
     }
 
     private void loadCSV() {
-        File file = new File("src/wendy.csv"); // sample.csv ファイルのパスを指定
+        String csvFile = "src/sample.csv";
+        String line;
+        String csvSplitBy = ",";
 
-        if (file.exists()) {
-            try (BufferedReader br = new BufferedReader(new FileReader(file))) {
-                String line;
-                tableView.getItems().clear(); // テーブルをクリアします
+        try (BufferedReader br = new BufferedReader(new FileReader(csvFile))) {
+            while ((line = br.readLine()) != null) {
+                String[] values = line.split(csvSplitBy);
 
-                // ヘッダー行をスキップします
-                if ((line = br.readLine()) != null) {
-                    // 何もせずにヘッダーをスキップ
+                String[] paddedValues = new String[37];
+                System.arraycopy(values, 0, paddedValues, 0, values.length);
+
+                for (int i = values.length; i < paddedValues.length; i++) {
+                    paddedValues[i] = "/";
                 }
 
-                while ((line = br.readLine()) != null) {
-                    String[] values = line.split(",");
+                CSVRecord record = new CSVRecord();
+                record.setProduct(paddedValues[0]);
+                record.setEbi(paddedValues[1]);
+                record.setKani(paddedValues[2]);
+                record.setKomugi(paddedValues[3]);
+                record.setSoba(paddedValues[4]);
+                record.setTamago(paddedValues[5]);
+                record.setNyu(paddedValues[6]);
+                record.setRakkasei(paddedValues[7]);
+                record.setKurumi(paddedValues[8]);
+                record.setAlmond(paddedValues[9]);
+                record.setAwabi(paddedValues[10]);
+                record.setIka(paddedValues[11]);
+                record.setIkura(paddedValues[12]);
+                record.setOrange(paddedValues[13]);
+                record.setCashewNuts(paddedValues[14]);
+                record.setKiwi(paddedValues[15]);
+                record.setBeef(paddedValues[16]);
+                record.setSesame(paddedValues[17]);
+                record.setSake(paddedValues[18]);
+                record.setSaba(paddedValues[19]);
+                record.setSoy(paddedValues[20]);
+                record.setChicken(paddedValues[21]);
+                record.setBanana(paddedValues[22]);
+                record.setPork(paddedValues[23]);
+                record.setMatsutake(paddedValues[24]);
+                record.setPeach(paddedValues[25]);
+                record.setYam(paddedValues[26]);
+                record.setApple(paddedValues[27]);
+                record.setGelatin(paddedValues[28]);
+                record.setFish(paddedValues[29]);
+                record.setKcal(parseDoubleOrDefault(paddedValues[30]));
+                record.setProtein(parseDoubleOrDefault(paddedValues[31]));
+                record.setFat(parseDoubleOrDefault(paddedValues[32]));
+                record.setCarbs(parseDoubleOrDefault(paddedValues[33]));
+                record.setSugars(parseDoubleOrDefault(paddedValues[34]));
+                record.setSalt(parseDoubleOrDefault(paddedValues[35]));
+                record.setDietaryFiber(parseDoubleOrDefault(paddedValues[36]));
 
-                    // フィールド数が足りない場合は空文字列で埋める
-                    String[] paddedValues = new String[37];
-                    for (int i = 0; i < paddedValues.length; i++) {
-                        if (i < values.length) {
-                            paddedValues[i] = values[i].isEmpty() ? "×" : values[i];
-                        } else {
-                            paddedValues[i] = i >= 30 ? "0" : "×"; // 数値フィールドの場合は "0" を、文字フィールドの場合は "×" をデフォルト値とする
-                        }
-                    }
+                recordMap.put(record.getProduct(), record);
+                comboBox.getItems().add(record.getProduct());
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
 
-                    CSVRecord record = new CSVRecord();
-                    record.setProduct(paddedValues[0]);
-                    record.setEbi(paddedValues[1]);
-                    record.setKani(paddedValues[2]);
-                    record.setKomugi(paddedValues[3]);
-                    record.setSoba(paddedValues[4]);
-                    record.setTamago(paddedValues[5]);
-                    record.setNyu(paddedValues[6]);
-                    record.setRakkasei(paddedValues[7]);
-                    record.setKurumi(paddedValues[8]);
-                    record.setAlmond(paddedValues[9]);
-                    record.setAwabi(paddedValues[10]);
-                    record.setIka(paddedValues[11]);
-                    record.setIkura(paddedValues[12]);
-                    record.setOrange(paddedValues[13]);
-                    record.setCashewNuts(paddedValues[14]);
-                    record.setKiwi(paddedValues[15]);
-                    record.setBeef(paddedValues[16]);
-                    record.setSesame(paddedValues[17]);
-                    record.setSake(paddedValues[18]);
-                    record.setSaba(paddedValues[19]);
-                    record.setSoy(paddedValues[20]);
-                    record.setChicken(paddedValues[21]);
-                    record.setBanana(paddedValues[22]);
-                    record.setPork(paddedValues[23]);
-                    record.setMatsutake(paddedValues[24]);
-                    record.setPeach(paddedValues[25]);
-                    record.setYam(paddedValues[26]);
-                    record.setApple(paddedValues[27]);
-                    record.setGelatin(paddedValues[28]);
-                    record.setFish(paddedValues[29]);
+    private void displayRecord(String productName) {
+        CSVRecord record = recordMap.get(productName);
+        if (record != null) {
+            productNameLabel.setText("商品名: " + record.getProduct());
 
-                    // 数値フィールドを変換し、エラーが発生した場合はデフォルト値を設定
-                    record.setKcal(parseDoubleOrDefault(paddedValues[30]));
-                    record.setProtein(parseDoubleOrDefault(paddedValues[31]));
-                    record.setFat(parseDoubleOrDefault(paddedValues[32]));
-                    record.setCarbs(parseDoubleOrDefault(paddedValues[33]));
-                    record.setSugars(parseDoubleOrDefault(paddedValues[34]));
-                    record.setSalt(parseDoubleOrDefault(paddedValues[35]));
-                    record.setDietaryFiber(parseDoubleOrDefault(paddedValues[36]));
+            gridPane.getChildren().clear();
 
-                    tableView.getItems().add(record);
+            String[] texts = {
+                "えび:" + record.getEbi(), "かに:" + record.getKani(), "小麦:" + record.getKomugi(),
+                "そば:" + record.getSoba(), "卵:" + record.getTamago(), "乳:" + record.getNyu(),
+                "落花生:" + record.getRakkasei(), "くるみ:" + record.getKurumi(), "アーモンド:" + record.getAlmond(),
+                "あわび:" + record.getAwabi(), "いか:" + record.getIka(), "いくら:" + record.getIkura(),
+                "オレンジ:" + record.getOrange(), "カシューナッツ:" + record.getCashewNuts(), "キウイフルーツ:" + record.getKiwi(),
+                "牛肉:" + record.getBeef(), "ごま:" + record.getSesame(), "さけ:" + record.getSake(),
+                "さば:" + record.getSaba(), "大豆:" + record.getSoy(), "鶏肉:" + record.getChicken(),
+                "バナナ:" + record.getBanana(), "豚肉:" + record.getPork(), "まつたけ:" + record.getMatsutake(),
+                "もも:" + record.getPeach(), "やまいも:" + record.getYam(), "りんご:" + record.getApple(),
+                "ゼラチン:" + record.getGelatin(), "魚介類:" + record.getFish()
+            };
+
+            for (int i = 0; i < texts.length; i++) {
+                Label label = new Label(texts[i]);
+                if (texts[i].contains("×")) {
+                    label.setStyle("-fx-border-color: black; -fx-border-width: 1px; -fx-padding: 5px; -fx-opacity: 0.1;");
+                } else {
+                    label.setStyle("-fx-border-color: black; -fx-border-width: 1px; -fx-padding: 5px;");
                 }
-            } catch (IOException e) {
-                e.printStackTrace();
+                label.setAlignment(Pos.CENTER);
+                label.setMaxSize(Double.MAX_VALUE, Double.MAX_VALUE);
+                GridPane.setRowIndex(label, i / 6);
+                GridPane.setColumnIndex(label, i % 6);
+                gridPane.getChildren().add(label);
+            }
+
+            for (int i = texts.length; i < 10; i++) {
+                StackPane cell = new StackPane();
+                cell.setStyle("-fx-border-color: black; -fx-border-width: 1px; -fx-padding: 5px;");
+                Canvas canvas = new Canvas(100, 100);
+                GraphicsContext gc = canvas.getGraphicsContext2D();
+                gc.setStroke(Color.BLACK);
+                gc.setLineWidth(1);
+                gc.strokeLine(0, 0, 100, 100);
+                gc.strokeLine(100, 0, 0, 100);
+                cell.getChildren().add(canvas);
+                GridPane.setRowIndex(cell, i / 6);
+                GridPane.setColumnIndex(cell, i % 6);
+                gridPane.getChildren().add(cell);
             }
         }
     }
 
     private double parseDoubleOrDefault(String value) {
         try {
-            String cleanedValue = value.replaceAll("[^0-9.]", ""); // 非数値文字を削除
-            if (cleanedValue.isEmpty()) {
-                return 0;
+            if (value == null || value.trim().isEmpty() || value.trim().equals("/")) {
+                return 0.0;
             }
-            return Double.parseDouble(cleanedValue); // 数値変換
+            return Double.parseDouble(value.trim());
         } catch (NumberFormatException e) {
-            return 0; // デフォルト値を 0 とする
+            return 0.0;
         }
     }
 }
